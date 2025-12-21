@@ -1,40 +1,39 @@
+// src/components/CategoryExpenseChart.jsx
 import React, { useContext } from "react";
 import { ExpenseContext } from "../context/ExpenseContext";
-import { Pie } from "react-chartjs-2";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Doughnut } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend
+} from "chart.js";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const CategoryExpenseChart = () => {
-  const { transactions } = useContext(ExpenseContext);
+  const { user } = useContext(ExpenseContext);
+  const transactions = user?.transactions || [];
 
-  const categoryTotals = {};
+  // Group expenses by category
+  const categoryMap = {};
   transactions.forEach(txn => {
-    if(txn.amount < 0) {
-      categoryTotals[txn.category] = (categoryTotals[txn.category] || 0) + Math.abs(txn.amount);
+    if (txn.amount < 0) {
+      categoryMap[txn.category] = (categoryMap[txn.category] || 0) + Math.abs(txn.amount);
     }
   });
 
   const data = {
-    labels: Object.keys(categoryTotals),
+    labels: Object.keys(categoryMap),
     datasets: [
       {
-        data: Object.values(categoryTotals),
+        data: Object.values(categoryMap),
         backgroundColor: [
-          "#FF6384","#36A2EB","#FFCE56","#4BC0C0","#9966FF","#FF9F40"
+          "#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", "#FF9F40"
         ],
-        borderWidth: 1,
-      },
+        hoverOffset: 6
+      }
     ],
-  };
-
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { position: "right", labels: { font: { size: 12 } } },
-      tooltip: { enabled: true },
-    },
   };
 
   return (
@@ -45,8 +44,8 @@ const CategoryExpenseChart = () => {
       boxShadow: "0 1px 6px rgba(0,0,0,0.1)",
       height: "250px"
     }}>
-      <h3 style={{ marginBottom: "10px", fontSize: "16px", fontWeight: "600" }}>Category-wise Spending</h3>
-      <Pie data={data} options={options} />
+      <h3 style={{ marginBottom: "10px", fontSize: "16px", fontWeight: "600" }}>Expenses by Category</h3>
+      <Doughnut data={data} />
     </div>
   );
 };

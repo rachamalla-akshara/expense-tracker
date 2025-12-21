@@ -1,47 +1,91 @@
-import React, { Suspense } from "react";
+// src/pages/Dashboard.js
+import React, { useState, useContext } from "react";
 import Sidebar from "../components/Sidebar";
 import Card from "../components/Card";
+import MonthlyExpenseChart from "../components/MonthlyExpenseChart";
+import CategoryExpenseChart from "../components/CategoryExpenseChart";
+import TransactionPieChart from "../components/TransactionPieChart";
+import RecentTransactions from "../components/RecentTransactions";
 import UpcomingBills from "../components/UpcomingBills";
 import SavingsGoalCard from "../components/SavingsGoalCard";
-import RecentTransactions from "../components/RecentTransactions";
-
-// Lazy load charts
-const MonthlyExpenseChart = React.lazy(() => import("../components/MonthlyExpenseChart"));
-const CategoryExpenseChart = React.lazy(() => import("../components/CategoryExpenseChart"));
+import UserProfile from "../components/UserProfile";
+import RecurringPayments from "../components/RecurringPayments";
+import Bills from "../components/Bills";
+import SavingsGoals from "../components/SavingsGoals";
+import CurrencySelector from "../components/CurrencySelector";
+import Analytics from "../components/Analytics";
+import { ExpenseContext } from "../context/ExpenseContext";
 
 const Dashboard = () => {
+  const [dateRange, setDateRange] = useState("30");
+  const { user } = useContext(ExpenseContext);
+  const transactions = user?.transactions || [];
+
+  const totalIncome = transactions.filter(txn => txn.amount > 0).reduce((sum, txn) => sum + txn.amount, 0);
+  const totalExpenses = transactions.filter(txn => txn.amount < 0).reduce((sum, txn) => sum + Math.abs(txn.amount), 0);
+  const totalBalance = totalIncome - totalExpenses;
+
   return (
-    <div style={{ display: "flex", backgroundColor: "#f3f4f6", minHeight: "100vh" }}>
+    <div style={{ display: "flex", minHeight: "100vh", background: "#f4f5f7" }}>
+      {/* Sidebar */}
       <Sidebar />
 
-      <div style={{ padding: "20px", flex: 1 }}>
-        <h1 style={{ marginBottom: "20px", fontSize: "28px" }}>Dashboard</h1>
-
-        <div style={{ display: "flex", gap: "15px", marginBottom: "20px", flexWrap: "wrap" }}>
-          <Card title="Total Balance" value="₹25,000" />
-          <Card title="Total Income" value="₹40,000" />
-          <Card title="Total Expenses" value="₹15,000" />
-        </div>
-
-        <div style={{ display: "flex", gap: "20px", marginBottom: "20px", flexWrap: "wrap" }}>
-          <UpcomingBills />
-          <SavingsGoalCard />
-        </div>
-
-        <div style={{ display: "flex", gap: "20px", flexWrap: "wrap", marginBottom: "20px" }}>
-          <div style={{ flex: "1 1 300px" }}>
-            <RecentTransactions />
-          </div>
-
-          <div style={{ flex: "2 1 600px", display: "flex", flexDirection: "column", gap: "20px" }}>
-            <Suspense fallback={<div>Loading Monthly Chart...</div>}>
-              <MonthlyExpenseChart />
-            </Suspense>
-            <Suspense fallback={<div>Loading Category Chart...</div>}>
-              <CategoryExpenseChart />
-            </Suspense>
+      {/* Main Content */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "24px" }}>
+        
+        {/* Top Bar: Dashboard title + Date Selector + UserProfile */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+          <h2 style={{ fontSize: "22px", fontWeight: 600 }}>Dashboard</h2>
+          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+            <select
+              value={dateRange}
+              onChange={(e) => setDateRange(e.target.value)}
+              style={{ padding: "6px 12px", borderRadius: "6px", border: "1px solid #d1d5db", background: "#fff" }}
+            >
+              <option value="7">Last 7 Days</option>
+              <option value="30">Last 30 Days</option>
+              <option value="90">Last 3 Months</option>
+              <option value="180">Last 6 Months</option>
+              <option value="all">All Time</option>
+            </select>
+            <UserProfile />
           </div>
         </div>
+
+        {/* Summary Cards */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px", marginBottom: "24px" }}>
+          <Card title="Total Balance" value={`₹${totalBalance}`} />
+          <Card title="Total Income" value={`₹${totalIncome}`} />
+          <Card title="Total Expenses" value={`₹${totalExpenses}`} />
+        </div>
+
+        {/* Charts Section */}
+        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "16px", marginBottom: "24px" }}>
+          <MonthlyExpenseChart dateRange={dateRange} />
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            <CategoryExpenseChart dateRange={dateRange} />
+            <TransactionPieChart />
+          </div>
+        </div>
+
+        {/* Extra Features Section */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "16px", marginBottom: "24px" }}>
+          <CurrencySelector />
+          <RecurringPayments />
+          <Bills />
+          <SavingsGoals />
+          <Analytics />
+        </div>
+
+        {/* Bottom Section */}
+        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "16px" }}>
+          <RecentTransactions dateRange={dateRange} />
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            <UpcomingBills />
+            <SavingsGoalCard />
+          </div>
+        </div>
+
       </div>
     </div>
   );

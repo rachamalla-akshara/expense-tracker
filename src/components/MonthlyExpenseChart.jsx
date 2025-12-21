@@ -1,3 +1,4 @@
+// src/components/MonthlyExpenseChart.jsx
 import React, { useContext } from "react";
 import { ExpenseContext } from "../context/ExpenseContext";
 import { Line } from "react-chartjs-2";
@@ -14,17 +15,17 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-const MonthlyExpenseChart = () => {
-  const { transactions } = useContext(ExpenseContext);
+const MonthlyExpenseChart = ({ dateRange }) => {
+  const { user } = useContext(ExpenseContext);
+  const transactions = user?.transactions || [];
 
-  // Aggregate total expenses per month
   const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   const monthlyExpenses = Array(12).fill(0);
 
   transactions.forEach(txn => {
     const date = new Date(txn.date);
     const month = date.getMonth();
-    if(txn.amount < 0) monthlyExpenses[month] += Math.abs(txn.amount);
+    if (txn.amount < 0) monthlyExpenses[month] += Math.abs(txn.amount);
   });
 
   const data = {

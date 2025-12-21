@@ -1,10 +1,13 @@
+// src/App.js
 import React, { useEffect, useState } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import AddIncome from "./pages/AddIncome";
+import AddExpense from "./pages/AddExpense";
 
-// NEW: Expense Context
+// Expense Context
 import { ExpenseProvider } from "./context/ExpenseContext";
 
 function App() {
@@ -16,13 +19,13 @@ function App() {
     setIsLoggedIn(loggedIn === "true");
   }, []);
 
-  // Function to handle login state update from Login component
+  // Handle login
   const handleLogin = () => {
     localStorage.setItem("isLoggedIn", "true");
     setIsLoggedIn(true);
   };
 
-  // Function to handle logout
+  // Handle logout
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
     setIsLoggedIn(false);
@@ -30,26 +33,40 @@ function App() {
 
   return (
     <ExpenseProvider>
-      <BrowserRouter>
+      <Router>
         <Routes>
+          {/* Login Route */}
           <Route
             path="/"
-            element={
-              <Login onLogin={handleLogin} isLoggedIn={isLoggedIn} />
-            }
+            element={<Login onLogin={handleLogin} isLoggedIn={isLoggedIn} />}
           />
+
+          {/* Register Route */}
           <Route path="/register" element={<Register />} />
 
+          {/* Protected Dashboard Route */}
           <Route
             path="/dashboard"
-            element={isLoggedIn ? (
-              <Dashboard onLogout={handleLogout} />
-            ) : (
-              <Navigate to="/" />
-            )}
+            element={
+              isLoggedIn ? (
+                <Dashboard onLogout={handleLogout} />
+              ) : (
+                <Navigate to="/" />
+              )
+            }
+          />
+
+          {/* Protected Add Income/Expense Routes */}
+          <Route
+            path="/add-income"
+            element={isLoggedIn ? <AddIncome /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/add-expense"
+            element={isLoggedIn ? <AddExpense /> : <Navigate to="/" />}
           />
         </Routes>
-      </BrowserRouter>
+      </Router>
     </ExpenseProvider>
   );
 }

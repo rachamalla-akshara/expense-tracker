@@ -3,7 +3,7 @@ import React, { useContext, useState } from "react";
 import { ExpenseContext } from "../context/ExpenseContext";
 
 const RecentTransactions = () => {
-  const { user, deleteTransaction, editTransaction } = useContext(ExpenseContext);
+  const { user, editTransaction, deleteTransaction } = useContext(ExpenseContext);
   const transactions = user?.transactions || [];
 
   const [editingId, setEditingId] = useState(null);

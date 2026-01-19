@@ -1,27 +1,30 @@
 from flask_restful import Resource, reqparse
-from ..models import RecurringPayment
-from .. import db
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from app import db
+from app.models import RecurringPayment
 
 parser = reqparse.RequestParser()
-parser.add_argument("name", type=str, required=True)
-parser.add_argument("amount", type=float, required=True)
-parser.add_argument("interval", type=str, required=True)  # e.g., monthly
+parser.add_argument('title', required=True, help="Title cannot be blank")
+parser.add_argument('amount', type=float, required=True, help="Amount is required")
+parser.add_argument('frequency', required=True, help="Frequency cannot be blank")
 
 class RecurringResource(Resource):
+    @jwt_required()
     def get(self):
-        payments = RecurringPayment.query.all()
+        user = get_jwt_identity()
+        payments = RecurringPayment.query.filter_by(user_id=user).all()
         return [p.to_dict() for p in payments], 200
 
+    @jwt_required()
     def post(self):
-        data = parser.parse_args()
-        new_payment = RecurringPayment(**data)
+        args = parser.parse_args()
+        user = get_jwt_identity()
+        new_payment = RecurringPayment(
+            user_id=user,
+            title=args['title'],
+            amount=args['amount'],
+            frequency=args['frequency']
+        )
         db.session.add(new_payment)
         db.session.commit()
         return new_payment.to_dict(), 201
-
-class RecurringDetailResource(Resource):
-    def delete(self, id):
-        payment = RecurringPayment.query.get_or_404(id)
-        db.session.delete(payment)
-        db.session.commit()
-        return {"message": "Deleted successfully"}, 200

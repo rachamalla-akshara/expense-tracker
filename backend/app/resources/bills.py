@@ -1,33 +1,30 @@
 from flask_restful import Resource, reqparse
-from ..models import Bill
-from .. import db
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from app import db
+from app.models import Bill
 
 parser = reqparse.RequestParser()
-parser.add_argument("name", type=str, required=True)
-parser.add_argument("amount", type=float, required=True)
-parser.add_argument("due_date", type=str, required=True)
+parser.add_argument('title', required=True)
+parser.add_argument('amount', type=float, required=True)
+parser.add_argument('due_date', required=True)
 
 class BillsResource(Resource):
+    @jwt_required()
     def get(self):
-        bills = Bill.query.all()
+        user = get_jwt_identity()
+        bills = Bill.query.filter_by(user_id=user).all()
         return [b.to_dict() for b in bills], 200
 
+    @jwt_required()
     def post(self):
-        data = parser.parse_args()
-        bill = Bill(**data, paid=False)
-        db.session.add(bill)
+        args = parser.parse_args()
+        user = get_jwt_identity()
+        new_bill = Bill(
+            user_id=user,
+            title=args['title'],
+            amount=args['amount'],
+            due_date=args['due_date']
+        )
+        db.session.add(new_bill)
         db.session.commit()
-        return bill.to_dict(), 201
-
-class BillDetailResource(Resource):
-    def put(self, id):
-        bill = Bill.query.get_or_404(id)
-        bill.paid = not bill.paid
-        db.session.commit()
-        return bill.to_dict(), 200
-
-    def delete(self, id):
-        bill = Bill.query.get_or_404(id)
-        db.session.delete(bill)
-        db.session.commit()
-        return {"message": "Deleted successfully"}, 200
+        return new_bill.to_dict(), 201

@@ -1,36 +1,55 @@
-from flask_restful import Resource, reqparse
-from app import db
+from flask import Blueprint, request, jsonify
 from app.models import Transaction
+from app import create_app, db
+from datetime import date
 
-parser = reqparse.RequestParser()
-parser.add_argument('title', type=str, required=True)
-parser.add_argument('amount', type=float, required=True)
-parser.add_argument('category', type=str, required=True)
+transactions_bp = Blueprint("transactions_bp", __name__)
 
-class TransactionList(Resource):
-    def get(self):
-        transactions = Transaction.query.all()
-        return [{"id": t.id, "title": t.title, "amount": t.amount, "category": t.category} for t in transactions], 200
+@transactions_bp.route("/transactions/search", methods=["GET"])
+def search_transactions():
+    start_date = request.args.get("start_date")  # YYYY-MM-DD
+    end_date = request.args.get("end_date")      # YYYY-MM-DD
+    category = request.args.get("category")
+    min_amount = request.args.get("min_amount", type=float)
+    max_amount = request.args.get("max_amount", type=float)
 
-    def post(self):
-        data = parser.parse_args()
-        t = Transaction(title=data['title'], amount=data['amount'], category=data['category'])
-        db.session.add(t)
-        db.session.commit()
-        return {"message": "Transaction added", "id": t.id}, 201
+    query = Transaction.query
 
-class TransactionResource(Resource):
-    def put(self, id):
-        data = parser.parse_args()
-        t = Transaction.query.get_or_404(id)
-        t.title = data['title']
-        t.amount = data['amount']
-        t.category = data['category']
-        db.session.commit()
-        return {"message": "Transaction updated"}, 200
+    if start_date:
+        query = query.filter(Transaction.date >= start_date)
+    if end_date:
+        query = query.filter(Transaction.date <= end_date)
+    if category:
+        query = query.filter(Transaction.category.ilike(f"%{category}%"))
+    if min_amount is not None:
+        query = query.filter(Transaction.amount >= min_amount)
+    if max_amount is not None:
+        query = query.filter(Transaction.amount <= max_amount)
 
-    def delete(self, id):
-        t = Transaction.query.get_or_404(id)
-        db.session.delete(t)
-        db.session.commit()
-        return {"message": "Transaction deleted"}, 200
+    results = query.all()
+    transactions_list = [t.to_dict() for t in results]
+
+    return jsonify({"transactions": transactions_list})
+
+
+# ===============================
+# ✅ Dummy transactions for testing
+# ===============================
+if __name__ == "__main__":
+    app = create_app()
+    app.app_context().push()
+
+    # Optional: Clear old transactions
+    Transaction.query.delete()
+    db.session.commit()
+
+    # Add dummy transactions
+    t1 = Transaction(user_id=1, amount=50.0, category="Food", date=date(2026, 1, 15))
+    t2 = Transaction(user_id=1, amount=120.0, category="Utilities", date=date(2026, 1, 18))
+    t3 = Transaction(user_id=2, amount=75.5, category="Entertainment", date=date(2026, 1, 20))
+    t4 = Transaction(user_id=1, amount=200.0, category="Shopping", date=date(2026, 1, 22))
+
+    db.session.add_all([t1, t2, t3, t4])
+    db.session.commit()
+
+    print("✅ Dummy transactions added successfully!")

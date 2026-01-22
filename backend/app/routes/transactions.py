@@ -1,30 +1,37 @@
 from flask import Blueprint, request, jsonify
-from app.models import Transaction
+from app import db
+from app.models.transaction import Transaction
 
-transactions_bp = Blueprint("transactions_bp", __name__)
+transactions_bp = Blueprint("transactions_bp", __name__, url_prefix="/transactions")
 
-@transactions_bp.route("/transactions/search", methods=["GET"])
-def search_transactions():
-    start_date = request.args.get("start_date")
-    end_date = request.args.get("end_date")
-    category = request.args.get("category")
-    min_amount = request.args.get("min_amount", type=float)
-    max_amount = request.args.get("max_amount", type=float)
+# GET all transactions
+@transactions_bp.route("/", methods=["GET"])
+def get_transactions():
+    transactions = Transaction.query.all()
+    result = []
+    for t in transactions:
+        result.append({
+            "id": t.id,
+            "amount": t.amount,
+            "category": t.category,
+            "description": t.description,
+            "created_at": t.created_at
+        })
+    return jsonify(result)
 
-    query = Transaction.query
+# POST a new transaction
+@transactions_bp.route("/", methods=["POST"])
+def add_transaction():
+    data = request.get_json()
+    amount = data.get("amount")
+    category = data.get("category")
+    description = data.get("description", "")
 
-    if start_date:
-        query = query.filter(Transaction.date >= start_date)
-    if end_date:
-        query = query.filter(Transaction.date <= end_date)
-    if category:
-        query = query.filter(Transaction.category.ilike(f"%{category}%"))
-    if min_amount is not None:
-        query = query.filter(Transaction.amount >= min_amount)
-    if max_amount is not None:
-        query = query.filter(Transaction.amount <= max_amount)
+    if amount is None or category is None:
+        return jsonify({"error": "amount and category are required"}), 400
 
-    results = query.all()
-    transactions_list = [t.to_dict() for t in results]
+    transaction = Transaction(amount=amount, category=category, description=description)
+    db.session.add(transaction)
+    db.session.commit()
 
-    return jsonify({"transactions": transactions_list})
+    return jsonify({"message": "Transaction added successfully", "id": transaction.id}), 201

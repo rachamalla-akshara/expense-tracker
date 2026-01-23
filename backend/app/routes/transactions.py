@@ -1,37 +1,25 @@
 from flask import Blueprint, request, jsonify
-from app import db
-from app.models.transaction import Transaction
+from flask_sqlalchemy import SQLAlchemy
 
-transactions_bp = Blueprint("transactions_bp", __name__, url_prefix="/transactions")
+db = SQLAlchemy()
 
-# GET all transactions
-@transactions_bp.route("/", methods=["GET"])
+transactions_bp = Blueprint('transactions', __name__, url_prefix='/transactions')
+
+class Transaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    amount = db.Column(db.Float, nullable=False)
+    description = db.Column(db.String(200), nullable=False)
+
+@transactions_bp.route('/', methods=['GET'])
 def get_transactions():
     transactions = Transaction.query.all()
-    result = []
-    for t in transactions:
-        result.append({
-            "id": t.id,
-            "amount": t.amount,
-            "category": t.category,
-            "description": t.description,
-            "created_at": t.created_at
-        })
+    result = [{'id': t.id, 'amount': t.amount, 'description': t.description} for t in transactions]
     return jsonify(result)
 
-# POST a new transaction
-@transactions_bp.route("/", methods=["POST"])
+@transactions_bp.route('/', methods=['POST'])
 def add_transaction():
     data = request.get_json()
-    amount = data.get("amount")
-    category = data.get("category")
-    description = data.get("description", "")
-
-    if amount is None or category is None:
-        return jsonify({"error": "amount and category are required"}), 400
-
-    transaction = Transaction(amount=amount, category=category, description=description)
-    db.session.add(transaction)
+    new_t = Transaction(amount=data['amount'], description=data['description'])
+    db.session.add(new_t)
     db.session.commit()
-
-    return jsonify({"message": "Transaction added successfully", "id": transaction.id}), 201
+    return jsonify({'message': 'Transaction added!', 'id': new_t.id}), 201

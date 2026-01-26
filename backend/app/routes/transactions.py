@@ -80,5 +80,45 @@ def add_transaction():
         # Return detailed error so you can debug
         return jsonify({"error": str(e)}), 500
 
+# ======================
+# NEW ENDPOINTS ADDED
+# ======================
+
+# PUT: Update a transaction by ID
+@app.route("/transactions/<int:transaction_id>/", methods=["PUT"])
+def update_transaction(transaction_id):
+    transaction = Transaction.query.get(transaction_id)
+    if not transaction:
+        return jsonify({"error": "Transaction not found"}), 404
+
+    data = request.get_json()
+    amount = data.get("amount")
+    description = data.get("description")
+
+    if amount is not None:
+        transaction.amount = amount
+    if description is not None:
+        transaction.description = description
+
+    db.session.commit()
+    return jsonify({
+        "id": transaction.id,
+        "amount": transaction.amount,
+        "description": transaction.description
+    })
+
+# DELETE: Remove a transaction by ID
+@app.route("/transactions/<int:transaction_id>/", methods=["DELETE"])
+def delete_transaction(transaction_id):
+    transaction = Transaction.query.get(transaction_id)
+    if not transaction:
+        return jsonify({"error": "Transaction not found"}), 404
+
+    db.session.delete(transaction)
+    db.session.commit()
+    return jsonify({"message": f"Transaction {transaction_id} deleted successfully"})
+
+# ======================
+
 if __name__ == "__main__":
     app.run(port=5001, debug=True)

@@ -17,13 +17,16 @@ app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "connect_args": {
-        "check_same_thread": False,
-        "timeout": 30
+        "check_same_thread": False,  # allows Flask to use the DB in multiple threads
+        "timeout": 30                # waits 30 seconds if DB is locked
     }
 }
 
 db = SQLAlchemy(app)
 
+# ================================
+# Database Model
+# ================================
 class Transaction(db.Model):
     __tablename__ = "transactions"
     id = db.Column(db.Integer, primary_key=True)
@@ -31,7 +34,9 @@ class Transaction(db.Model):
     category = db.Column(db.String(100), nullable=False)
     date = db.Column(db.String(20), nullable=False)
 
-# Initialize DB and enable WAL mode
+# ================================
+# Initialize DB and WAL mode
+# ================================
 with app.app_context():
     db.create_all()
     db.session.execute(text("PRAGMA journal_mode=WAL;"))
@@ -44,9 +49,7 @@ with app.app_context():
 def home():
     return jsonify({"message": "Backend is running!"})
 
-# GET transactions (works with or without trailing slash)
 @app.route("/transactions", methods=["GET"])
-@app.route("/transactions/", methods=["GET"])
 def get_transactions():
     transactions = Transaction.query.all()
     return jsonify([
@@ -54,16 +57,14 @@ def get_transactions():
         for t in transactions
     ])
 
-# POST transactions (works with or without trailing slash)
 @app.route("/transactions", methods=["POST"])
-@app.route("/transactions/", methods=["POST"])
 def add_transaction():
     try:
         data = request.get_json(force=True)
-
         if not data:
             return jsonify({"error": "No JSON received"}), 400
 
+        # Validate required fields
         for key in ["amount", "category", "date"]:
             if key not in data:
                 return jsonify({"error": f"Missing field: {key}"}), 400
@@ -76,20 +77,22 @@ def add_transaction():
 
         db.session.add(txn)
         db.session.commit()
-        return jsonify({"message": "Transaction added", "transaction": {
-            "id": txn.id,
-            "amount": txn.amount,
-            "category": txn.category,
-            "date": txn.date
-        }}), 201
+
+        return jsonify({
+            "message": "Transaction added",
+            "transaction": {
+                "id": txn.id,
+                "amount": txn.amount,
+                "category": txn.category,
+                "date": txn.date
+            }
+        }), 201
 
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
-# Summary route
 @app.route("/summary", methods=["GET"])
-@app.route("/summary/", methods=["GET"])
 def get_summary():
     transactions = Transaction.query.all()
     total_income = sum(t.amount for t in transactions if t.amount > 0)
@@ -98,6 +101,13 @@ def get_summary():
         "total_income": total_income,
         "total_expense": total_expense
     })
+
+# ================================
+# Properly remove session after each request
+# ================================
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    db.session.remove()
 
 # ================================
 # Run App

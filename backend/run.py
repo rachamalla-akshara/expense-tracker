@@ -17,15 +17,15 @@ app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "connect_args": {
-        "check_same_thread": False,  # allows Flask to use the DB in multiple threads
-        "timeout": 30                # waits 30 seconds if DB is locked
+        "check_same_thread": False,
+        "timeout": 30
     }
 }
 
 db = SQLAlchemy(app)
 
 # ================================
-# Database Model
+# Database Models
 # ================================
 class Transaction(db.Model):
     __tablename__ = "transactions"
@@ -34,8 +34,26 @@ class Transaction(db.Model):
     category = db.Column(db.String(100), nullable=False)
     date = db.Column(db.String(20), nullable=False)
 
+class User(db.Model):
+    __tablename__ = "users"
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    password = db.Column(db.String(100), nullable=False)
+
+class UserSession(db.Model):
+    __tablename__ = "user_sessions"
+    id = db.Column(db.Integer, primary_key=True)
+    user_email = db.Column(db.String(100), nullable=False)
+    event_type = db.Column(db.String(10), nullable=False)  # login/logout
+    timestamp = db.Column(db.DateTime, server_default=db.func.current_timestamp())
+
+def record_session(user_email, event_type):
+    session = UserSession(user_email=user_email, event_type=event_type)
+    db.session.add(session)
+    db.session.commit()
+
 # ================================
-# Initialize DB and WAL mode
+# Initialize DB + WAL mode
 # ================================
 with app.app_context():
     db.create_all()
@@ -49,6 +67,7 @@ with app.app_context():
 def home():
     return jsonify({"message": "Backend is running!"})
 
+# --- Transactions ---
 @app.route("/transactions", methods=["GET"])
 def get_transactions():
     transactions = Transaction.query.all()
@@ -61,10 +80,6 @@ def get_transactions():
 def add_transaction():
     try:
         data = request.get_json(force=True)
-        if not data:
-            return jsonify({"error": "No JSON received"}), 400
-
-        # Validate required fields
         for key in ["amount", "category", "date"]:
             if key not in data:
                 return jsonify({"error": f"Missing field: {key}"}), 400
@@ -74,10 +89,8 @@ def add_transaction():
             category=data["category"],
             date=data["date"]
         )
-
         db.session.add(txn)
         db.session.commit()
-
         return jsonify({
             "message": "Transaction added",
             "transaction": {
@@ -87,7 +100,6 @@ def add_transaction():
                 "date": txn.date
             }
         }), 201
-
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
@@ -101,6 +113,28 @@ def get_summary():
         "total_income": total_income,
         "total_expense": total_expense
     })
+
+# --- Login/Logout ---
+@app.route("/login", methods=["POST"])
+def login():
+    data = request.get_json(force=True)
+    email = data.get("email")
+    password = data.get("password")
+
+    user = User.query.filter_by(email=email, password=password).first()
+    if not user:
+        return jsonify({"error": "Invalid credentials"}), 401
+
+    record_session(email, "login")
+    return jsonify({"message": "Login successful"})
+
+@app.route("/logout", methods=["POST"])
+def logout():
+    data = request.get_json(force=True)
+    email = data.get("email")
+
+    record_session(email, "logout")
+    return jsonify({"message": "Logout successful"})
 
 # ================================
 # Properly remove session after each request

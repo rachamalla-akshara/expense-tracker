@@ -1,70 +1,133 @@
-# Getting Started with Create React App
+# 💰 Expense Tracker
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A full‑stack **Expense Tracker** application to manage your daily income and expenses with user authentication, category‑wise tracking, and visual dashboards.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 🚀 Features
 
-### `npm start`
+* 🔐 User Authentication (Login / Logout)
+* ➕ Add Income & Expense Transactions
+* 🗂️ Category‑based expense tracking
+* 📊 Dashboard with charts & summaries
+* 🕒 Track *who* made changes and *when* (audit‑friendly)
+* 📅 Monthly & recent transaction views
+* 💾 Persistent storage using database
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🛠️ Tech Stack
 
-### `npm test`
+### Frontend
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+* React.js
+* React Router
+* Context API
+* Chart libraries (Pie / Bar / Monthly charts)
+* HTML, CSS, JavaScript
 
-### `npm run build`
+### Backend
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+* Node.js
+* Express.js
+* SQLite (can be extended to MySQL/PostgreSQL)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 📂 Project Structure
 
-### `npm run eject`
+```
+expense-tracker/
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── context/
+│   │   └── App.jsx
+│
+├── backend/
+│   ├── routes/
+│   ├── controllers/
+│   ├── database/
+│   └── server.js
+│
+└── README.md
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+---
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## ⚙️ Installation & Setup
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### 1️⃣ Clone the repository
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```
+git clone https://github.com/your-username/expense-tracker.git
+cd expense-tracker
+```
 
-## Learn More
+### 2️⃣ Backend Setup
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```
+cd backend
+npm install
+node server.js
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 3️⃣ Frontend Setup
 
-### Code Splitting
+```
+cd frontend
+npm install
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+---
 
-### Analyzing the Bundle Size
+## 📊 Dashboard Overview
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+* **Total Balance**
+* **Total Income vs Expense**
+* **Category‑wise Expense Chart**
+* **Recent Transactions**
+* **Monthly Expense Summary**
 
-### Making a Progressive Web App
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## 🔐 Authentication Flow
 
-### Advanced Configuration
+1. User logs in
+2. Session is created
+3. All transactions are linked to the logged‑in user
+4. Each change is timestamped
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+---
 
-### Deployment
+## 🧠 Learning Outcomes
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+* Full‑stack CRUD operations
+* React state management with Context API
+* Backend API integration
+* SQL queries (JOIN, GROUP BY)
+* Real‑world project structure
 
-### `npm run build` fails to minify
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 🔮 Future Enhancements
+
+* 📈 Advanced analytics & reports
+* 📤 Export to PDF / Excel
+* 📧 Email notifications
+* 🌐 Cloud database integration
+* 📱 Mobile‑responsive UI
+
+---
+
+## 👤 Author
+
+**Your Name**
+Computer Science Student | Full‑Stack Developer
+
+---
+
+⭐ If you like this project, don’t forget to star the repo!

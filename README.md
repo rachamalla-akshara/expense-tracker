@@ -122,4 +122,11 @@ npm start
 * 📱 Mobile‑responsive UI
 
 ---
+To Start FrontEnd must be using 
+cd frontend
+$env:PORT = 4001
+npm start 
+To Start BackEnd must be using
+cd backend
+python run.py
 

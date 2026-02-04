@@ -123,11 +123,3 @@ npm start
 
 ---
 
-## 👤 Author
-
-**Your Name**
-Computer Science Student | Full‑Stack Developer
-
----
-
-⭐ If you like this project, don’t forget to star the repo!

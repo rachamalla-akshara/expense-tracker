@@ -1,48 +1,46 @@
-# 💰 Expense Tracker
-
+💰 Expense Tracker
 Project Setup
-1. Frontend
 
-To start the frontend:
+Follow these steps to get the project running locally and access the live version.
 
+Step 1: Frontend Setup
+Open Command Prompt and navigate to the frontend folder:
 cd "C:\Users\raksh\OneDrive\Desktop\expense-tracker-main\frontend"
+Install required packages:
 npm install
+Set the port for the frontend:
 set PORT=4001
+Start the frontend server:
 npm start
-
-This will launch the frontend on http://localhost:4001
-.
-
-2. Backend
-
-To start the backend:
-
+The frontend will run on: http://localhost:4001
+Step 2: Backend Setup
+Navigate to the backend folder:
 cd "C:\Users\raksh\OneDrive\Desktop\expense-tracker-main\backend"
-
-# Create virtual environment
+Create a virtual environment:
 python -m venv venv
-
-# Activate virtual environment
+Activate the virtual environment:
 venv\Scripts\activate
-
-# Install dependencies
+Install the backend dependencies:
 pip install -r requirements.txt
-
-# Run the backend server
+Run the backend server:
 python run.py
-3. Login Credentials
+Step 3: Login Credentials
+
+Use the following credentials to log in:
+
 Email	Password
 achu@gmail.com
 	12345
-4. Ngrok Link
+Step 4: Ngrok Link
 
-You can access the live app via:
+Access the live app using Ngrok:
 
 https://b364-152-59-201-38.ngrok-free.app/login
 
-5. Database
+Step 5: Database Access
 
 To view or check data:
 
-Use DB Browser for SQLite or the database of your choice.
-Browse the database to inspect tables and records.
+Use DB Browser for SQLite (or your preferred database viewer).
+Open the database file located in the backend folder.
+Browse tables to inspect records and data.

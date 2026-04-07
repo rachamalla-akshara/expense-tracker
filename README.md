@@ -130,3 +130,6 @@ To Start BackEnd must be using
 cd backend
 python run.py
 
+To login use 
+achu@gmail.com-Email
+12345-Password

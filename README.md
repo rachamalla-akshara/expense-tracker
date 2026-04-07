@@ -1,143 +1,48 @@
 # 💰 Expense Tracker
 
-A full‑stack **Expense Tracker** application to manage your daily income and expenses with user authentication, category‑wise tracking, and visual dashboards.
+Project Setup
+1. Frontend
 
----
+To start the frontend:
 
-## 🚀 Features
-
-* 🔐 User Authentication (Login / Logout)
-* ➕ Add Income & Expense Transactions
-* 🗂️ Category‑based expense tracking
-* 📊 Dashboard with charts & summaries
-* 🕒 Track *who* made changes and *when* (audit‑friendly)
-* 📅 Monthly & recent transaction views
-* 💾 Persistent storage using database
-
----
-
-## 🛠️ Tech Stack
-
-### Frontend
-
-* React.js
-* React Router
-* Context API
-* Chart libraries (Pie / Bar / Monthly charts)
-* HTML, CSS, JavaScript
-
-### Backend
-
-* Node.js
-* Express.js
-* SQLite (can be extended to MySQL/PostgreSQL)
-
----
-
-## 📂 Project Structure
-
-```
-expense-tracker/
-│
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── context/
-│   │   └── App.jsx
-│
-├── backend/
-│   ├── routes/
-│   ├── controllers/
-│   ├── database/
-│   └── server.js
-│
-└── README.md
-```
-
----
-
-## ⚙️ Installation & Setup
-
-### 1️⃣ Clone the repository
-
-```
-git clone https://github.com/your-username/expense-tracker.git
-cd expense-tracker
-```
-
-### 2️⃣ Backend Setup
-
-```
-cd backend
-npm install
-node server.js
-```
-
-### 3️⃣ Frontend Setup
-
-```
-cd frontend
-npm install
-npm start
-```
-
----
-
-## 📊 Dashboard Overview
-
-* **Total Balance**
-* **Total Income vs Expense**
-* **Category‑wise Expense Chart**
-* **Recent Transactions**
-* **Monthly Expense Summary**
-
----
-
-## 🔐 Authentication Flow
-
-1. User logs in
-2. Session is created
-3. All transactions are linked to the logged‑in user
-4. Each change is timestamped
-
----
-
-## 🧠 Learning Outcomes
-
-* Full‑stack CRUD operations
-* React state management with Context API
-* Backend API integration
-* SQL queries (JOIN, GROUP BY)
-* Real‑world project structure
-
----
-
-## 🔮 Future Enhancements
-
-* 📈 Advanced analytics & reports
-* 📤 Export to PDF / Excel
-* 📧 Email notifications
-* 🌐 Cloud database integration
-* 📱 Mobile‑responsive UI
-
----
-*****To Start FrontEnd must be using (cmd)****
 cd "C:\Users\raksh\OneDrive\Desktop\expense-tracker-main\frontend"
 npm install
 set PORT=4001
 npm start
-To Start BackEnd must be using
+
+This will launch the frontend on http://localhost:4001
+.
+
+2. Backend
+
+To start the backend:
+
 cd "C:\Users\raksh\OneDrive\Desktop\expense-tracker-main\backend"
+
+# Create virtual environment
 python -m venv venv
+
+# Activate virtual environment
 venv\Scripts\activate
+
+# Install dependencies
 pip install -r requirements.txt
+
+# Run the backend server
 python run.py
+3. Login Credentials
+Email	Password
+achu@gmail.com
+	12345
+4. Ngrok Link
 
-*****To login use*****
-achu@gmail.com-Email
-12345-Password
-ngrok link - (https://b364-152-59-201-38.ngrok-free.app/login)
+You can access the live app via:
 
-****DB browser use for checking data****
-browse the database 
+https://b364-152-59-201-38.ngrok-free.app/login
+
+5. Database
+
+To view or check data:
+
+Use DB Browser for SQLite or the database of your choice.
+Browse the database to inspect tables and records.

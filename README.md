@@ -122,15 +122,22 @@ npm start
 * 📱 Mobile‑responsive UI
 
 ---
-To Start FrontEnd must be using 
-cd frontend
-$env:PORT = 4001
-npm start 
+*****To Start FrontEnd must be using (cmd)****
+cd "C:\Users\raksh\OneDrive\Desktop\expense-tracker-main\frontend"
+npm install
+set PORT=4001
+npm start
 To Start BackEnd must be using
-cd backend
+cd "C:\Users\raksh\OneDrive\Desktop\expense-tracker-main\backend"
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
 python run.py
 
-To login use 
+*****To login use*****
 achu@gmail.com-Email
 12345-Password
 ngrok link - (https://b364-152-59-201-38.ngrok-free.app/login)
+
+****DB browser use for checking data****
+browse the database 
